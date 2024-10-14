@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import { ILogRecord } from "@opentelemetry/otlp-transformer";
 import { Histogram } from "@/app/components/histogram";
 
-export default function LogViewer(props: { logs: Array<ILogRecord> }) {
+type LogViewerProps = {
+  logs: Array<ILogRecord>;
+};
+
+export default function LogViewer(props: LogViewerProps) {
   const [expandedRows, setExpandedRows] = useState<Set<number>>(
     new Set<number>(),
   );
@@ -24,11 +28,7 @@ export default function LogViewer(props: { logs: Array<ILogRecord> }) {
   return (
     <div className="container mx-auto w-[800px]">
       <h1 className="text-3xl font-bold my-4">OTLP Log Viewer</h1>
-      <Histogram
-          width={800}
-          height={300}
-          data={props.logs}
-      />
+      <Histogram width={800} height={300} data={props.logs} />
       <table className="min-w-full table-fixed my-2 w-[800px]">
         <thead>
           <tr className="bg-gray-200 border border-gray-300">

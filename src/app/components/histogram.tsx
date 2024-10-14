@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as d3 from "d3";
-import {ILogRecord} from "@opentelemetry/otlp-transformer";
+import { ILogRecord } from "@opentelemetry/otlp-transformer";
 
 type HistogramProps = {
   width: number;
@@ -10,13 +10,17 @@ type HistogramProps = {
   data: Array<ILogRecord>; // nanos
 };
 
+const XAXIS_HEIGHT = 40;
 const YAXIS_WIDTH = 40;
 
 export const Histogram = ({ width, height, data }: HistogramProps) => {
   // Use ref for the future addition of axis
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const dateData = useMemo(() => data.map((d) => new Date(d.timeUnixNano as number / 10e5)), [data]);
+  const dateData = useMemo(
+    () => data.map((d) => new Date((d.timeUnixNano as number) / 10e5)),
+    [data],
+  );
 
   const xScale = useMemo(() => {
     const extent = d3.extent(dateData) as [Date, Date];
@@ -33,9 +37,7 @@ export const Histogram = ({ width, height, data }: HistogramProps) => {
       .bin<Date, Date>()
       .value((d) => d)
       .domain(d3.extent(dateData) as [Date, Date])
-      .thresholds(d3.timeDays(d3.min(dateData)!, d3.max(dateData)!))(
-      dateData,
-    );
+      .thresholds(d3.timeDays(d3.min(dateData)!, d3.max(dateData)!))(dateData);
   }, [dateData]);
 
   const yScale = useMemo(() => {
@@ -77,14 +79,14 @@ export const Histogram = ({ width, height, data }: HistogramProps) => {
     <svg
       ref={svgRef}
       width={width}
-      height={height + 40 /* Extra space for axis labels */}
+      height={height + XAXIS_HEIGHT /* Extra space for axis labels */}
     >
       {buckets.map((bucket, i) => {
         return (
           <rect
             key={i}
             fill="#D2E3FC"
-            stroke="blue"
+            stroke="#1973E8"
             x={xScale(bucket.x0!)}
             width={xScale(bucket.x1!) - xScale(bucket.x0!)}
             y={yScale(bucket.length)}
